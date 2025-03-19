@@ -4,7 +4,7 @@ class CfgPatches
 	{
 		author = "Moerderhoschi";
 		name = "MDH AI Stay low in Combat";
-		url = "https://steamcommunity.com/sharedfiles/filedetails/?id=3438379619";
+		url = "https://steamcommunity.com/sharedfiles/filedetails/?id=3447902000";
 		units[] = {};
 		weapons[] = {};
 		requiredVersion = 1.0;
@@ -41,6 +41,6 @@ class CfgMods
 		hidePicture = "true";
 		hideName = "true";
 		actionName = "Website";
-		action = "https://steamcommunity.com/sharedfiles/filedetails/?id=3438379619";
+		action = "https://steamcommunity.com/sharedfiles/filedetails/?id=3447902000";
 	};
 };

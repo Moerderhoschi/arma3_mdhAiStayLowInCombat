@@ -1,9 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // MDH AI STAY LOW IN COMBAT(by Moerderhoschi) - v2025-03-19
 // github: https://github.com/Moerderhoschi/arma3_mdhAiStayLowInCombat
-// steam mod version: https://steamcommunity.com/sharedfiles/filedetails/?id=3438379619
+// steam mod version: https://steamcommunity.com/sharedfiles/filedetails/?id=3447902000
 /////////////////////////////////////////////////////////////////////////////////////////////
-if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99) then
+if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionNameSpace getVariable ["pAvoidAiLayingDown",0] == 0}) then
 {
 	0 spawn
 	{
@@ -88,7 +88,7 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99) then
 
 		_diaryTimer = 10;
 		sleep (3 + random 2);
-		while {missionNameSpace getVariable ["pAiStayLowInCombat",_defaultValue] == _valueCheck} do
+		while {missionNameSpace getVariable ["pAiStayLowInCombat",_defaultValue] == _valueCheck && {missionNameSpace getVariable ["pAvoidAiLayingDown",0] == 0}} do
 		{
 			if (_env) then {call _mdhFnc};
 			sleep (4 + random 2);
