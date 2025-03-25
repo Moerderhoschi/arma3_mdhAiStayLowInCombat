@@ -1,4 +1,4 @@
- ![Alt text](https://images.steamusercontent.com/ugc/32193398118864201/BCA5E3DAA9F99BDE85DBE524A87BF46EA13CDFAD/)
+ ![Alt text](https://images.steamusercontent.com/ugc/32193398118926889/A86E9D199B358C4BF0247EB2443C506BE7B1936A/)
 
 MDH AI Stay low in Combat is a mod, created by Moerderhoschi for Arma 3.
 
