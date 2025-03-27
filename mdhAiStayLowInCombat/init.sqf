@@ -65,7 +65,7 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 			_mdhFnc =
 			{
 				{
-					if (alive _x && {vehicle _x == _x} && {!(_x in allPlayers)}) then
+					if (alive _x && {vehicle _x == _x} && {!(_x in allPlayers)} && {unitPos _x != "Up"}) then
 					{
 						if (behaviour _x == "COMBAT") then
 						{
