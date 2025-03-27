@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
-// MDH AI STAY LOW IN COMBAT(by Moerderhoschi) - v2025-03-19
+// MDH AI STAY LOW IN COMBAT(by Moerderhoschi) - v2025-03-27
 // github: https://github.com/Moerderhoschi/arma3_mdhAiStayLowInCombat
 // steam mod version: https://steamcommunity.com/sharedfiles/filedetails/?id=3447902000
 /////////////////////////////////////////////////////////////////////////////////////////////
