@@ -158,7 +158,6 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 					};
 				} foreach allUnits;
 			};
-			mdhFncTmp = _mdhFnc;
 		};
 
 		if (hasInterface) then
