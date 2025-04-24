@@ -41,6 +41,10 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 						{
 							profileNameSpace setVariable[_this#0,_this#1];
 							systemChat (_this#2);
+							if (isMultiplayer && !isServer) then
+							{
+								missionNameSpace setVariable[_this#0,_this#1,true];
+							};
 						}
 						else
 						{
@@ -90,6 +94,16 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 		{
 			_mdhFnc =
 			{
+				if (isDedicated) then
+				{
+					_v = missionNameSpace getVariable["mdhAiStayLowInCombatConfig",-1];
+					if (_v != -1) then 
+					{
+						profileNameSpace setVariable["mdhAiStayLowInCombatConfig",_v];
+						missionNameSpace setVariable["mdhAiStayLowInCombatConfig",nil,true];
+					};
+				};
+
 				{
 					if (alive _x && {vehicle _x == _x} && {!(_x in allPlayers)} && {unitPos _x != "UP" OR _x getVariable["mdhUnitPosUpTmp",0] == 1}) then
 					{
@@ -149,7 +163,7 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 												_s = [_a#0, _a#1, (_a#2) + 1.5];
 												if (([_x,"VIEW",_e] checkVisibility [eyePos _e, _s]) == 0) then
 												{
-													_x setUnitPos "MIDDLE"
+													_x setUnitPos "DOWN"
 												}
 												else
 												{
@@ -160,7 +174,7 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 													}
 													else
 													{
-														_x setUnitPos "MIDDLE";
+														_x setUnitPos "DOWN";
 													};
 													_x setVariable["mdhUnitPosTmp2",(_x getVariable["mdhUnitPosTmp1",getPosWorld _x])];
 													_x setVariable["mdhUnitPosTmp1",getPosWorld _x];
@@ -178,7 +192,7 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 									}
 									else
 									{
-										_x setUnitPos "MIDDLE"
+										_x setUnitPos "DOWN"
 									};
 								}
 							}
