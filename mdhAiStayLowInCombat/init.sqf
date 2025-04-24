@@ -60,11 +60,15 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 							+ '<br/>'
 							+ 'set Modversion: '
 							+ '<br/>'
-							+ '<font color="#33CC33"><execute expression = "[''mdhAiStayLowInCombatOldVersion01'',0,''MDH AI Stay low in Combat new Version activated''] call mdhAiStayLowInCombatBriefingFnc">New: AI get up behind Cover to engage enemy (performance intensive)</execute></font color>'
+							+ '<font color="#33CC33"><execute expression = "[''mdhAiStayLowInCombatConfig'',2,''MDH AI Stay low in Combat: AI get up behind Cover to engage enemy but go back down if supressed by enemy fire activated''] call mdhAiStayLowInCombatBriefingFnc">AI get up behind Cover to engage enemy <br/>but go back down if supressed by enemy fire</execute></font color>'
 							+ '<br/>'
 							+ 'or'
 							+ '<br/>'
-							+ '<font color="#33CC33"><execute expression = "[''mdhAiStayLowInCombatOldVersion01'',1,''MDH AI Stay low in Combat old Version activated''] call mdhAiStayLowInCombatBriefingFnc">Old: AI ignore Cover and stay low</execute></font color>'
+							+ '<font color="#33CC33"><execute expression = "[''mdhAiStayLowInCombatConfig'',1,''MDH AI Stay low in Combat: AI get up behind Cover to engage enemy activated''] call mdhAiStayLowInCombatBriefingFnc">AI get up behind Cover to engage enemy</execute></font color>'
+							+ '<br/>'
+							+ 'or'
+							+ '<br/>'
+							+ '<font color="#33CC33"><execute expression = "[''mdhAiStayLowInCombatConfig'',0,''MDH AI Stay low in Combat: AI ignore Cover and always stay low activated''] call mdhAiStayLowInCombatBriefingFnc">AI ignore Cover and always stay low</execute></font color>'
 							+ '<br/>'
 							+ '<br/>'
 							+ 'If you have any question you can contact me at the steam workshop page.<br/>'
@@ -92,13 +96,41 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 						_x setVariable["mdhUnitPosUpTmp",0];
 						if (behaviour _x == "COMBAT") then
 						{
+							if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",2] == 2) then
+							{
+								if !(_x getVariable["mdhAiStayLowInCombatSupressedEH",false]) then
+								{
+									_x setVariable["mdhAiStayLowInCombatSupressedEH",true];
+									_x addEventHandler ["Suppressed",
+									{
+										params ["_unit", "_distance", "_shooter", "_instigator", "_ammoObject", "_ammoClassName", "_ammoConfig"];
+										if (_distance < 2 && _unit getVariable["mdhUnitPosDownTmp",0] == 0) then
+										{
+											_unit setVariable["mdhUnitPosDownTmp",1];
+											_unit setUnitPos "DOWN";
+										};
+									}];
+								};
+							};
+
+							if
+							(
+								(profileNameSpace getVariable["mdhAiStayLowInCombatConfig",2] == 2) 
+								&& {_x getVariable["mdhUnitPosDownTmp",1] == 1}
+							)
+							exitWith
+							{
+								_x setVariable["mdhUnitPosDownTmp",0];
+								_x setUnitPos "DOWN";
+							};
+
 							if (speed _x > 2) then
 							{
 								_x setUnitPos "MIDDLE"
 							}
 							else
 							{
-								if (profileNameSpace getVariable["mdhAiStayLowInCombatOldVersion01",0] == 1) then
+								if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",2] == 0) then
 								{
 									_x setUnitPos "DOWN"
 								}
