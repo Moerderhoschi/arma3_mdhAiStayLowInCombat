@@ -10,12 +10,12 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 		_valueCheck = 99;
 		_defaultValue = 99;
 		_path = 'mdhAiStayLowInCombat';
-		_env  = isServer;
+		_env  = true;
 
 		_diary  = 0;
 		_mdhFnc = 0;		
-		
-		if (hasInterface) then
+
+		if (hasInterface OR isDedicated) then
 		{
 			_diary =
 			{
@@ -77,7 +77,7 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 							+ '<br/>'
 							+ 'If you have any question you can contact me at the steam workshop page.<br/>'
 							+ '<br/>'
-							+ '<img image="'+_path+'\mdhAiStayLowInCombat.paa"/><br/>'
+							+ '<img image="'+(if(isNil"_path")then{""}else{_path})+'\mdhAiStayLowInCombat.paa"/><br/>'
 							+ '<br/>'
 							+ 'Credits and Thanks:<br/>'
 							+ 'Armed-Assault.de Crew - For many great ArmA moments in many years<br/>'
@@ -87,6 +87,22 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 					]
 				};
 				true
+			};
+
+			if (isDedicated) then
+			{
+				_diary spawn
+				{
+					_diary = _this;
+					missionNameSpace setVariable["mdhAiStayLowInCombatDiary",_diary,true];
+					uiSleep 4;
+					[{
+						if (hasInterface) then
+						{
+							0 spawn mdhAiStayLowInCombatDiary;
+						};
+					}] remoteExec ["call", 0, true];
+				};
 			};
 		};
 
@@ -104,17 +120,36 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 					};
 				};
 
+				_cAllUnits = 0;
+				_cAllAi = 0;
+				_cAllCombat = 0;
+				_cEHAdd = 0;
+				_cExitWithDownSupressed = 0;
+				_cSpeedBiggerTwo = 0;
+				_cConf0 = 0;
+				_cUnitPosAuto = 0;
+				_cAttackTarget = 0;
+				_cNoTarget = 0;
+				_cUntiPosUpDefend = 0;
+				_cVisProne = 0;
+				_cVisKneel = 0;
+				_cVisNoStance = 0;
+				_cUntiPosDownDefend = 0;
 				{
-					if (alive _x && {vehicle _x == _x} && {!(_x in allPlayers)} && {unitPos _x != "UP" OR _x getVariable["mdhUnitPosUpTmp",0] == 1}) then
+					_cAllUnits = _cAllUnits + 1;
+					if (alive _x && {local _x} && {vehicle _x == _x} && {!(_x in allPlayers)} && {unitPos _x != "UP" OR _x getVariable["mdhUnitPosUpTmp",0] == 1}) then
 					{
+						_cAllAi = _cAllAi + 1;
 						_x setVariable["mdhUnitPosUpTmp",0];
 						if (behaviour _x == "COMBAT") then
 						{
+							_cAllCombat = _cAllCombat + 1;
 							if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",2] == 2) then
 							{
 								if !(_x getVariable["mdhAiStayLowInCombatSupressedEH",false]) then
 								{
 									_x setVariable["mdhAiStayLowInCombatSupressedEH",true];
+									_cEHAdd = _cEHAdd + 1;
 									_x addEventHandler ["Suppressed",
 									{
 										params ["_unit", "_distance", "_shooter", "_instigator", "_ammoObject", "_ammoClassName", "_ammoConfig"];
@@ -134,25 +169,29 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 							)
 							exitWith
 							{
+								_cExitWithDownSupressed = _cExitWithDownSupressed + 1;
 								_x setVariable["mdhUnitPosDownTmp",0];
 								_x setUnitPos "DOWN";
 							};
 
 							if (speed _x > 2) then
 							{
-								_x setUnitPos "MIDDLE"
+								_cSpeedBiggerTwo = _cSpeedBiggerTwo + 1;
+								_x setUnitPos "MIDDLE";
 							}
 							else
 							{
 								if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",2] == 0) then
 								{
-									_x setUnitPos "DOWN"
+									_cConf0 = _cConf0 + 1;
+									_x setUnitPos "DOWN";
 								}
 								else
 								{
 									_e = getAttackTarget _x;
 									if (!isNull _e) then
 									{
+										_cAttackTarget = _cAttackTarget + 1;
 										_a = getPosWorld _x;
 										_p = [_a#0, _a#1, (_a#2) + 0.3];
 										if (([_x,"VIEW",_e] checkVisibility [eyePos _e, _p]) == 0) then
@@ -163,17 +202,20 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 												_s = [_a#0, _a#1, (_a#2) + 1.5];
 												if (([_x,"VIEW",_e] checkVisibility [eyePos _e, _s]) == 0) then
 												{
-													_x setUnitPos "DOWN"
+													_cVisNoStance = _cVisNoStance + 1;
+													_x setUnitPos "DOWN";
 												}
 												else
 												{
 													if ((getPosWorld _x) distance (_x getVariable["mdhUnitPosTmp2",[500,500,500]]) < 2) then
 													{
+														_cUntiPosUpDefend = _cUntiPosUpDefend + 1;
 														_x setUnitPos "UP";
 														_x setVariable["mdhUnitPosUpTmp",1];
 													}
 													else
 													{
+														_cUntiPosDownDefend = _cUntiPosDownDefend + 1;
 														_x setUnitPos "DOWN";
 													};
 													_x setVariable["mdhUnitPosTmp2",(_x getVariable["mdhUnitPosTmp1",getPosWorld _x])];
@@ -182,27 +224,47 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 											}
 											else
 											{
+												_cVisKneel = _cVisKneel + 1;
 												_x setUnitPos "MIDDLE";
 											};
 										}
 										else
 										{
-											_x setUnitPos "DOWN"
+											_cVisProne = _cVisProne + 1;
+											_x setUnitPos "DOWN";
 										};
 									}
 									else
 									{
-										_x setUnitPos "DOWN"
+										_cNoTarget = _cNoTarget + 1;
+										_x setUnitPos "MIDDLE";
 									};
 								}
 							}
 						}
 						else
 						{
+							_cUnitPosAuto = _cUnitPosAuto + 1;
 							_x setUnitPos "AUTO";
 						};
 					};
 				} foreach allUnits;
+				//["AllUnits: "+str(_cAllUnits)+" / "+
+				//"AllAiCond: "+str(_cAllAi)+" / "+
+				//"AllCombat: "+str(_cAllCombat)+" / "+
+				//"EHAdd: "+str(_cEHAdd)+" / "+
+				//"ExitWithDownSupressed: "+str(_cExitWithDownSupressed)+" / "+
+				//"SpeedBiggerTwo: "+str(_cSpeedBiggerTwo)+" / "+
+				//"Conf0: "+str(_cConf0)+" / "+
+				//"UnitPosAuto: "+str(_cUnitPosAuto)+" / "+
+				//"AttackTarget: "+str(_cAttackTarget)+" / "+
+				//"NoTarget: "+str(_cNoTarget)+" / "+
+				//"UntiPosUpDefend: "+str(_cUntiPosUpDefend)+" / "+
+				//"UntiPosDownDefend: "+str(_cUntiPosDownDefend)+" / "+
+				//"VisProne: "+str(_cVisProne)+" / "+
+				//"VisKneel: "+str(_cVisKneel)+" / "+
+				//"VisNoStanceSoGoDown: "+str(_cVisNoStance)
+				//] remoteExec ["systemChat", 0];
 			};
 		};
 
