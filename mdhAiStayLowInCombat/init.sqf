@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
-// MDH AI STAY LOW IN COMBAT(by Moerderhoschi) - v2025-04-24
+// MDH AI STAY LOW IN COMBAT(by Moerderhoschi) - v2025-04-26
 // github: https://github.com/Moerderhoschi/arma3_mdhAiStayLowInCombat
 // steam mod version: https://steamcommunity.com/sharedfiles/filedetails/?id=3447902000
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,6 +64,10 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 							+ '<br/>'
 							+ 'set Modversion: '
 							+ '<br/>'
+							+ '<font color="#33CC33"><execute expression = "[''mdhAiStayLowInCombatConfig'',3,''MDH AI Stay low in Combat and Stealth: AI get up behind Cover to engage enemy but go back down if supressed by enemy fire activated''] call mdhAiStayLowInCombatBriefingFnc">AI get up behind Cover to engage enemy but go back <br/>down if supressed by enemy fire (Combat and Stealth)</execute></font color>'
+							+ '<br/>'
+							+ 'or'
+							+ '<br/>'
 							+ '<font color="#33CC33"><execute expression = "[''mdhAiStayLowInCombatConfig'',2,''MDH AI Stay low in Combat: AI get up behind Cover to engage enemy but go back down if supressed by enemy fire activated''] call mdhAiStayLowInCombatBriefingFnc">AI get up behind Cover to engage enemy <br/>but go back down if supressed by enemy fire</execute></font color>'
 							+ '<br/>'
 							+ 'or'
@@ -110,13 +114,13 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 		{
 			_mdhFnc =
 			{
-				if (isDedicated) then
+				if (!hasInterface) then
 				{
 					_v = missionNameSpace getVariable["mdhAiStayLowInCombatConfig",-1];
 					if (_v != -1) then 
 					{
 						profileNameSpace setVariable["mdhAiStayLowInCombatConfig",_v];
-						missionNameSpace setVariable["mdhAiStayLowInCombatConfig",nil,true];
+						0 spawn {sleep 10; missionNameSpace setVariable["mdhAiStayLowInCombatConfig",nil,true]};
 					};
 				};
 
@@ -141,10 +145,12 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 					{
 						_cAllAi = _cAllAi + 1;
 						_x setVariable["mdhUnitPosUpTmp",0];
-						if (behaviour _x == "COMBAT") then
+						_b = ["COMBAT"];
+						if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",3] > 2) then {_b pushBack "STEALTH"};
+						if (behaviour _x in _b) then
 						{
 							_cAllCombat = _cAllCombat + 1;
-							if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",2] == 2) then
+							if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",3] > 1) then
 							{
 								if !(_x getVariable["mdhAiStayLowInCombatSupressedEH",false]) then
 								{
@@ -164,7 +170,7 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 
 							if
 							(
-								(profileNameSpace getVariable["mdhAiStayLowInCombatConfig",2] == 2) 
+								(profileNameSpace getVariable["mdhAiStayLowInCombatConfig",3] > 1) 
 								&& {_x getVariable["mdhUnitPosDownTmp",1] == 1}
 							)
 							exitWith
@@ -181,7 +187,7 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 							}
 							else
 							{
-								if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",2] == 0) then
+								if (profileNameSpace getVariable["mdhAiStayLowInCombatConfig",3] == 0) then
 								{
 									_cConf0 = _cConf0 + 1;
 									_x setUnitPos "DOWN";
@@ -281,6 +287,6 @@ if (missionNameSpace getVariable ["pAiStayLowInCombat",99] == 99 && {missionName
 			if (_env) then {call _mdhFnc};
 			sleep (4 + random 2);
 			if (time > _diaryTimer && {hasInterface}) then {call _diary; _diaryTimer = time + 10};
-		};					
+		};
 	};
 };
